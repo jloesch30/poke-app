@@ -1,34 +1,39 @@
 name: CI
+
 on:
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   types:
     runs-on: ubuntu-latest
+
     steps:
     - name: Check out source
       uses: actions/checkout@v4
+
     - uses: actions/setup-node@v4
       with:
         node-version-file: 'client/.node-version'
         cache: yarn
-    - name: Cache
+
+    - name: Cache Node.js modules
       uses: actions/cache@v4
       with:
-        path: client/node_modules/.cache
-        key: ${{ runner.os }}-types-${{ github.run_id }}
+        path: client/node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('client/yarn.lock') }}
         restore-keys: |
-          ${{ runner.os }}-types-
+          ${{ runner.os }}-node-modules-
+
     - name: Install JS dependencies
       working-directory: client
       run: yarn install --frozen-lockfile
 
-
     - name: Check TypeScript types
+      working-directory: client
       env:
         NODE_OPTIONS: "--max-old-space-size=8192"
-      working-directory: client
       run: yarn run tsc
