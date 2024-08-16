@@ -46,4 +46,4 @@ RUN yarn global add serve
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 
-CMD [ "serve", "-s", "dist" "-l", "3000"]
+CMD [ "serve", "-s", "dist", "-l", "3000"]
