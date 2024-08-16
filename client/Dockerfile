@@ -35,15 +35,15 @@ RUN yarn run build
 # Remove development dependencies
 RUN yarn install --production=true
 
-RUN yarn add serve
-
 # Final stage for app image
 FROM base
 
 # Copy built application
 COPY --from=build /app /app
 
+RUN yarn global add serve
+
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 
-CMD [ "serve", "-s", "dist"]
+CMD [ "serve", "-s", "dist" "-l", "3000"]
