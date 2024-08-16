@@ -1,4 +1,4 @@
-export const HOST = import.meta.env.TEST_HOST ?? null;
+export const TEST_HOST = import.meta.env.TEST_HOST ?? null;
 
 const headers = {
   'Accept': 'application/json',
@@ -7,11 +7,12 @@ const headers = {
 
 
 const get = async <ApiResponse = unknown>(
-  url: string,
+  resource: string,
+  host?: string | null,
   abortController?: AbortController
 ): Promise<ApiResponse | { error: string }> => {
   try {
-    const reqUrl = HOST ? `${HOST}${url}` : url;
+    const reqUrl = host ? `${host}${resource}` : resource;
     const response = await fetch(reqUrl, {
       method: 'GET',
       headers: headers,

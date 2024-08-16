@@ -1,4 +1,5 @@
-export default {
-  rootPath: '/',
-  leaderBoard: '/leaderboard'
-}
+export const routes = {
+  rootPath: '/', 
+  pokeDexPath: '/pokedex',
+  notFoundPath: '*',
+};

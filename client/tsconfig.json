@@ -11,6 +11,12 @@
       ],
       "pages/*": [
         "./src/pages/*"
+      ],
+      "types/*": [
+        "./src/types/*"
+      ],
+      "components/*": [
+        "./src/components/*"
       ]
     },
     "types": [
