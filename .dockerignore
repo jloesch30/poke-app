@@ -1,0 +1,31 @@
+# flyctl launch added from .gitignore
+**/.DS_Store
+
+# flyctl launch added from poke-fe/.gitignore
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+poke-fe/node_modules
+poke-fe/.pnp
+poke-fe/**/.pnp.js
+
+# testing
+poke-fe/coverage
+
+# production
+poke-fe/build
+
+# misc
+poke-fe/**/.DS_Store
+poke-fe/**/.env.local
+poke-fe/**/.env.development.local
+poke-fe/**/.env.test.local
+poke-fe/**/.env.production.local
+
+poke-fe/**/npm-debug.log*
+poke-fe/**/yarn-debug.log*
+poke-fe/**/yarn-error.log*
+
+# flyctl launch added from poke-fe/node_modules/tailwindcss/stubs/.gitignore
+!poke-fe/node_modules/tailwindcss/stubs/**/*
+fly.toml
