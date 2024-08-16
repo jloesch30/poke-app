@@ -55,9 +55,10 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Verify fly.toml path
+        working-directory: client
         run: |
           echo "Checking if fly.toml exists at the specified path..."
-          ls -al client/fly.toml
+          ls -al .
           echo "Printing fly.toml content..."
           cat client/fly.tomle config file exits
 
