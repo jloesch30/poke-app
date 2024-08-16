@@ -55,5 +55,4 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy
-        working-directory: client
-        run: flyctl deploy --remote-only
+        run: flyctl deploy --remote-only --config ${{ github.workspace }}/client/fly.toml
