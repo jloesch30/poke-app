@@ -12,9 +12,8 @@ jobs:
     - name: Check out source
       uses: actions/checkout@v4
     - uses: actions/setup-node@v4
-      working-directory: client
       with:
-        node-version-file: '.node-version'
+        node-version-file: 'client/.node-version'
         cache: yarn
     - name: Cache
       uses: actions/cache@v4
