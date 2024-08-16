@@ -54,5 +54,12 @@ jobs:
       - name: Setup Flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
 
+      - name: Verify fly.toml path
+        run: |
+          echo "Checking if fly.toml exists at the specified path..."
+          ls -al client/fly.toml
+          echo "Printing fly.toml content..."
+          cat client/fly.tomle config file exits
+
       - name: Deploy
         run: flyctl deploy --remote-only --config ${{ github.workspace }}/client/fly.toml
