@@ -19,6 +19,7 @@ jobs:
       with:
         node-version-file: 'client/.node-version'
         cache: yarn
+        cache-dependency-path: client/yarn.lock
 
     - name: Cache Node.js modules
       uses: actions/cache@v4
