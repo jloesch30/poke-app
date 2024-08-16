@@ -52,7 +52,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Flyctl
-        working-directory: client
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy
