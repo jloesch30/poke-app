@@ -1,7 +1,38 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+  "extends": "@tsconfig/recommended/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "module": "es2022",
+    "moduleResolution": "node",
+    "paths": {
+      "lib/*": [
+        "./src/lib/*"
+      ],
+      "pages/*": [
+        "./src/pages/*"
+      ],
+      "types/*": [
+        "./src/types/*"
+      ],
+      "components/*": [
+        "./src/components/*"
+      ]
+    },
+    "types": [
+      "node",
+      "react",
+      "vitest",
+      "vitest/globals"
+    ]
+  },
+  "module": "es2022",
+  "include": [
+    "vite.config.ts",
+    "src/**/*",
+  ],
+  "typeRoots": [
+    "typings",
+    "node_modules/@types"
   ]
 }

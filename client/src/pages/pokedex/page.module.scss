@@ -1,0 +1,63 @@
+$device-color: #FF6C6C;
+$device-screen-color: #F9A8D4;
+$pokemon-list-color: #A5B1C2;
+
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 500;
+  font-size: 4rem;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+
+.deviceContainer {
+  display: flex;
+  border-radius: 8px;
+  flex-direction: row;
+  background-color: $device-color;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  width: 100%;
+  max-width: 70%;
+  min-width: 300px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.deviceScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: $device-screen-color;
+  max-width: 100%;
+  border-radius: 8px;
+  padding: 100px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pokemonList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: $pokemon-list-color;
+  border-radius: 8px;
+  padding: 20px;
+  padding-top: 100px;
+  padding-bottom: 100px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}

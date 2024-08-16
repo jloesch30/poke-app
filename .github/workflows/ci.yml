@@ -44,6 +44,7 @@ jobs:
 
   deploy-client-to-fly:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     needs: 
       - types
 
