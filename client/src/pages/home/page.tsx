@@ -35,7 +35,7 @@ const Home = () => {
           <span className={styles.emphasis}>Chakra UI</span>, and{' '}
           <span className={styles.emphasis}>Jotai</span>.
         </Text>
-        <Text marginTop="1" display='flex' flexDirection='row' gap='10px'>
+        <Text marginTop="1" display='flex' flexDirection='row' gap='10px' marginBottom='0'>
           Created by:{' '}
           <Link
             href="https://github.com/jloesch30"
@@ -46,6 +46,19 @@ const Home = () => {
             justifyContent="center"
           >
             Josh Loesch <ExternalLinkIcon mx="2px" marginLeft='5px' />
+          </Link>
+        </Text>
+        <Text display='flex' flexDirection='row' gap='10px'>
+          Repository:{' '}
+          <Link
+            href="https://github.com/jloesch30/poke-app"
+            isExternal
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="center"
+          >
+            Poke-app <ExternalLinkIcon mx="2px" marginLeft='5px' />
           </Link>
         </Text>
         <Button onClick={() => navigate(routes.pokeDexPath)}>
