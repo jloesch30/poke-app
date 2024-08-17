@@ -8,29 +8,35 @@ export interface ResourceCacheAtomPayload {
   abortController?: AbortController;
 }
 
-export type CacheMapEntry<Response> = {
+export interface SearchAtomPayload {
+  href: string;
+  host?: string | null;
+}
+
+export type FetchResponse<Response> = {
   loading: boolean;
   data: Response | { error: string } | undefined;
+  status?: number;
 };
 
 export type ResourceCacheMapAtom<Response> = WritableAtom<
-  Record<string, CacheMapEntry<Response> | undefined>,
+  Record<string, FetchResponse<Response> | undefined>,
   [ResourceCacheAtomPayload],
   void
 >;
 
 export type CacheMapAtom<Response> = PrimitiveAtom<
-  Record<string, CacheMapEntry<Response>>
+  Record<string, FetchResponse<Response>>
 >;
 
 const createResourceCacheMapAtom = <
   Response
 >(): ResourceCacheMapAtom<Response> => {
-  const mapBaseAtom = atom<Record<string, CacheMapEntry<Response> | undefined>>(
+  const mapBaseAtom = atom<Record<string, FetchResponse<Response> | undefined>>(
     {}
   );
   const mapAtom = atom<
-    Record<string, CacheMapEntry<Response> | undefined>,
+    Record<string, FetchResponse<Response> | undefined>,
     [ResourceCacheAtomPayload],
     void
   >(
@@ -46,7 +52,7 @@ const createResourceCacheMapAtom = <
           ...current,
           [payload.href]: { loading: true, data: undefined },
         }));
-        const response = await request.get<Response>(
+        const res = await request.get<Response>(
           href,
           payload.host,
           payload.abortController
@@ -56,7 +62,8 @@ const createResourceCacheMapAtom = <
           ...current,
           [payload.href]: {
             loading: false,
-            data: response,
+            status: res.status,
+            data: res.data,
           },
         }));
       }
@@ -72,12 +79,12 @@ const createSingleCacheEntryAtom =
       host?: string | null
     ) => {
       const singleEntryAtom = atom<
-        CacheMapEntry<T>,
+        FetchResponse<T>,
         [ResourceCacheAtomPayload],
         void
       >(
         (get) => {
-          return get(cache)[href] || { loading: true, data: undefined };
+          return get(cache)[href] || { loading: true, data: undefined, status: undefined };
         },
         (_get, set, payload) => {
           set(cache, { ...payload, host });
@@ -94,19 +101,16 @@ const createResourceAtom = <Response>(
   href: string | undefined,
   host?: string | null,
 ) => {
-  const innerAtom = atom<{
-    loading: boolean;
-    data: Response | { error: string } | undefined
-  }>({ loading: true, data: undefined });
+  const innerAtom = atom<FetchResponse<Response>>({ loading: true, data: undefined, status: undefined });
   const resourceAtom = atom(
     (get) => get(innerAtom),
     async (_, set) => {
       if (!href) return;
-      set(innerAtom, { loading: true, data: undefined });
+      set(innerAtom, { loading: true, data: undefined, status: undefined });
       console.log('fetching', href);
-      const data = await request.get<Response>(href, host);
-      console.log('fetched', data);
-      set(innerAtom, { loading: false, data });
+      const res = await request.get<Response>(href, host);
+      console.log('fetched', res);
+      set(innerAtom, { loading: false, data: res.data, status: res.status });
     }
   );
   resourceAtom.onMount = (set) => {
@@ -116,8 +120,28 @@ const createResourceAtom = <Response>(
   return resourceAtom;
 }
 
+const createSearchAtom = <Response>() => {
+  const innerAtom = atom<FetchResponse<Response>>({ loading: false, data: undefined, status: undefined });
+  const searchAtom = atom<
+    FetchResponse<Response>,
+    [SearchAtomPayload],
+    void
+  >(
+    (get) => get(innerAtom),
+    async (_, set, { href, host }) => {
+      if (!href) return;
+      set(innerAtom, { loading: true, data: undefined });
+      const res = await request.get<Response>(href, host);
+      set(innerAtom, { loading: false, data: res.data, status: res.status });
+    }
+  );
+
+  return searchAtom;
+}
+
 export {
   createResourceAtom,
   createResourceCacheMapAtom,
   createSingleCacheEntryAtom,
+  createSearchAtom,
 };

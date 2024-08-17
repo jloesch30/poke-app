@@ -8,5 +8,8 @@ const pokemonCacheAtom =
 const usePokemonAtom = (href: string) =>
   useMemo(() => createSingleCacheEntryAtom(pokemonCacheAtom)(href), [href]);
 
-export { usePokemonAtom };
+export { 
+  usePokemonAtom,
+  useSearchAtom
+};
 

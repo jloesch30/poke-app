@@ -2978,6 +2978,11 @@ jest-fetch-mock@^3.0.3:
     cross-fetch "^3.0.4"
     promise-polyfill "^8.1.3"
 
+jotai-utils@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/jotai-utils/-/jotai-utils-0.0.0.tgz#c437b210dd5924cbc72739d583c18d2bf2db24a1"
+  integrity sha512-z/gS7iuWWwXY/JnvsYmcDpcFLnDsJVqkIFJ66h060LY5+cte8S7SDKEVEFPcoM6UQjyy3mj6eEKjcxb1+7OqZw==
+
 jotai@^2.9.3:
   version "2.9.3"
   resolved "https://registry.yarnpkg.com/jotai/-/jotai-2.9.3.tgz#abcae49a737cd50e3144a6c9eb39840db077c727"
