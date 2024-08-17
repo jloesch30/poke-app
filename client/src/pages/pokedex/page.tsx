@@ -16,6 +16,8 @@ import {
   useToast,
   SkeletonCircle,
   Box,
+  Heading,
+  Spinner,
 } from '@chakra-ui/react';
 import { ArrowLeftIcon } from '@chakra-ui/icons';
 import styles from './page.module.scss';
@@ -92,10 +94,11 @@ const Search = ({
             background: 'white',
           }}
           borderColor="crimson"
+          borderWidth="5px"
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </Tooltip>
-      <Button borderColor="crimson" borderWidth="2px" onClick={handleSearch}>
+      <Button borderColor="crimson" borderWidth="5px" onClick={handleSearch}>
         Go!
       </Button>
     </Flex>
@@ -103,29 +106,31 @@ const Search = ({
 };
 
 const Display = ({ pokemon }: { pokemon: FetchResponse<Pokemon> }) => {
-  if (pokemon.loading) return <div>Loading...</div>;
+  if (pokemon.loading) return <Spinner />
 
   const notFound = pokemon.status === 404;
 
   return (
-    <div className={styles.displayContainer}>
+    <Box className={styles.displayContainer}>
       {notFound ? (
         <Alert status="warning" borderRadius="8px">
           <AlertIcon />
           <AlertTitle>Pokemon not found!</AlertTitle>
         </Alert>
       ) : pokemon.data && !('error' in pokemon.data) ? (
-        <>
+        <Flex direction='column' height='100%'>
           <Flex direction="row">
             <Image
-              width="200px"
-              height="200px"
+              width="150px"
+              height="150px"
               src={pokemon.data.sprites.front_default}
             />
             <Info pokemon={pokemon.data} />
           </Flex>
-          <Stats pokemon={pokemon.data} />
-        </>
+          <Box display='flex' alignItems='flex-end' height='100%'>
+            <Stats pokemon={pokemon.data} />
+          </Box>
+        </Flex>
       ) : !pokemon.data && !pokemon.status ? (
         <div />
       ) : (
@@ -137,7 +142,7 @@ const Display = ({ pokemon }: { pokemon: FetchResponse<Pokemon> }) => {
           </AlertDescription>
         </Alert>
       )}
-    </div>
+    </Box>
   );
 };
 
@@ -147,8 +152,8 @@ interface CaptureProps {
 
 const Capture = ({ handleCapture }: CaptureProps) => {
   return (
-    <Button onClick={handleCapture} borderColor="crimson" borderWidth="2px">
-      Throw Pokeball
+    <Button onClick={handleCapture} borderColor="crimson" borderWidth="5px">
+      Capture!
     </Button>
   );
 };
@@ -159,6 +164,10 @@ interface PokemonListProps {
 }
 
 const PokemonList = ({ capturedPokemon, handleRelease }: PokemonListProps) => {
+  const pokemonLength = capturedPokemon.length;
+
+  if (pokemonLength === 0) return <div />;
+
   return (
     <Flex
       direction={{
@@ -168,15 +177,20 @@ const PokemonList = ({ capturedPokemon, handleRelease }: PokemonListProps) => {
       alignItems="center"
       justifyContent="center"
     >
-      {capturedPokemon.map((pokemon, idx) => (
-        <div key={pokemon.id}>
+      {pokemonLength > 0 ? (
+        capturedPokemon.map((pokemon, idx) => (
           <Image
+            key={idx}
+            boxSize="80px"
             src={pokemon.sprites.front_default}
             onClick={() => handleRelease(idx)}
             alt={pokemon.name}
+            cursor="pointer"
           />
-        </div>
-      ))}
+        ))
+      ) : (
+        <div />
+      )}
     </Flex>
   );
 };
@@ -229,7 +243,7 @@ const PokeDex = () => {
   };
 
   return (
-    <Container centerContent maxW="4xl">
+    <Container centerContent maxW="4xl" marginBottom='5rem'>
       <Flex direction="row" alignItems="center" justifyContent="center" gap="8">
         <ArrowLeftIcon
           boxSize={10}
@@ -238,7 +252,7 @@ const PokeDex = () => {
           onClick={() => window.history.back()}
           _hover={{ color: 'red.300' }}
         />
-        <Box className={styles.pageHeader}>Catch 'Em All!</Box>
+        <Heading size='5xl' className={styles.pageHeader}>Catch 'Em All!</Heading>
       </Flex>
       <Grid
         gap="2px"
@@ -258,6 +272,7 @@ const PokeDex = () => {
           md: 600,
         }}
         className={styles.deviceContainer}
+        boxShadow="lg"
       >
         <GridItem
           area={'search'}
@@ -274,13 +289,32 @@ const PokeDex = () => {
         <GridItem
           area={'display'}
           backgroundColor="white"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
           height="300px"
           width="315px"
           borderRadius="8px"
+          borderWidth="5px"
+          borderColor="crimson"
         >
           <Display pokemon={searchResult} />
         </GridItem>
-        <GridItem area={'list'} minW="100px">
+        <GridItem
+          area={'list'}
+          minW="100px"
+          display="flex"
+          backgroundColor="white"
+          borderRadius="8px"
+          borderWidth="5px"
+          borderColor="crimson"
+          height="550px"
+          width="100%"
+          marginLeft="20px"
+          paddingTop="30px"
+          alignItems="flex-start"
+          justifyContent="center"
+        >
           <PokemonList
             capturedPokemon={capturedPokemon}
             handleRelease={handleRelesae}
@@ -290,7 +324,7 @@ const PokeDex = () => {
           <Capture handleCapture={handleCapture} />
         </GridItem>
       </Grid>
-      <div className={styles.pokemonCardsHeader}>Pokemon Index</div>
+      <Heading className={styles.pokemonCardsHeader}>Pokemon Index</Heading>
       <Grid
         templateColumns={'repeat(5, 1fr)'}
         gap={6}
