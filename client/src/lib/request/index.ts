@@ -27,7 +27,6 @@ const get = async <ApiResponse = unknown>(
     });
 
     if (response.ok) {
-      console.log('response', response);
       return { status: response.status, data: await response.json() };
     }
 

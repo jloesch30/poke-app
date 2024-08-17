@@ -107,9 +107,7 @@ const createResourceAtom = <Response>(
     async (_, set) => {
       if (!href) return;
       set(innerAtom, { loading: true, data: undefined, status: undefined });
-      console.log('fetching', href);
       const res = await request.get<Response>(href, host);
-      console.log('fetched', res);
       set(innerAtom, { loading: false, data: res.data, status: res.status });
     }
   );

@@ -8,7 +8,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <ChakraProvider>
+      <ChakraProvider toastOptions={{ defaultOptions: { position: 'top' } }}>
         <App />
       </ChakraProvider>
     </BrowserRouter>

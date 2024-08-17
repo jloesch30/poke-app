@@ -14,7 +14,6 @@ describe('get', () => {
       json: async () => ({ random: '12345' }),
     });
     const response = await request.get('https://example.com');
-    console.log(response);
 
     const expectedrResponse = { status: 200, data: { random: '12345' } };
 

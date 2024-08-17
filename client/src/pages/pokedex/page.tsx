@@ -14,21 +14,24 @@ import {
   AlertDescription,
   Image,
   useToast,
-  Stack,
-  Text,
+  SkeletonCircle,
+  Box,
 } from '@chakra-ui/react';
+import { ArrowLeftIcon } from '@chakra-ui/icons';
 import styles from './page.module.scss';
 import { useState } from 'react';
 
 import { Pokemon, PokemonIndexResponse } from 'types/api-responses';
 import { PokemonCard, Stats, Info } from 'components/pokedex';
 import { createSearchAtom, FetchResponse } from 'lib/atoms';
+import { useCaptureToast, useLimitToast, useReleaseToast } from '../../hooks';
 
-const PokemonCards = ({
-  pokemon,
-}: {
+interface PokemonCardsProps {
   pokemon: FetchResponse<PokemonIndexResponse>;
-}) => {
+  setSearchQuery: (query: string) => void;
+}
+
+const PokemonCards = ({ pokemon, setSearchQuery }: PokemonCardsProps) => {
   if (!pokemon.data) return null;
 
   if (pokemon.data && 'error' in pokemon.data)
@@ -55,19 +58,15 @@ const PokemonCards = ({
     );
 
   return (
-    <Grid
-      templateColumns={{
-        base: 'repeat(1, 1fr)',
-        md: 'repeat(3, 1fr)',
-      }}
-      templateRows="repeat(3, 1fr)"
-      gap={6}
-      className={styles.pokemonCards}
-    >
+    <>
       {pokemon.data.results.map((poke) => (
-        <PokemonCard key={poke.name} pokemonBase={poke} />
+        <PokemonCard
+          key={poke.name}
+          pokemonBase={poke}
+          setSearchQuery={setSearchQuery}
+        />
       ))}
-    </Grid>
+    </>
   );
 };
 
@@ -147,11 +146,11 @@ interface CaptureProps {
 }
 
 const Capture = ({ handleCapture }: CaptureProps) => {
-  return <Button 
-  onClick={handleCapture}
-  borderColor="crimson"
-  borderWidth="2px"
-  >Throw Pokeball</Button>;
+  return (
+    <Button onClick={handleCapture} borderColor="crimson" borderWidth="2px">
+      Throw Pokeball
+    </Button>
+  );
 };
 
 interface PokemonListProps {
@@ -194,6 +193,10 @@ const PokeDex = () => {
 
   const toast = useToast();
 
+  const limitToast = useLimitToast(toast);
+  const captureToast = useCaptureToast(toast);
+  const releaseToast = useReleaseToast(toast);
+
   const handleSearch = () => {
     if (!searchQuery) return;
     setSearch({ href: `pokemon/${searchQuery}`, host: pokemonHost });
@@ -209,38 +212,34 @@ const PokeDex = () => {
       return;
 
     const pokemon = searchResult.data;
-
     const length = capturedPokemon.length;
 
     if (length >= 6) {
-      toast({
-        title: 'Cannot capture Pokemon',
-        description: 'You have reached the maximum limit of captured Pokemon',
-        status: 'error',
-        duration: 2000,
-        isClosable: true,
-      });
+      limitToast(6);
       return;
     }
 
     setCapturedPokemon((prev) => [...prev, pokemon]);
+    captureToast();
   };
 
   const handleRelesae = (selected: number) => {
     setCapturedPokemon((prev) => prev.filter((_, idx) => idx !== selected));
-
-    toast({
-      title: 'Pokemon released',
-      description: 'You have released a Pokemon',
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-    });
+    releaseToast();
   };
 
   return (
     <Container centerContent maxW="4xl">
-      <div className={styles.pageHeader}>Catch 'Em All!</div>
+      <Flex direction="row" alignItems="center" justifyContent="center" gap="8">
+        <ArrowLeftIcon
+          boxSize={10}
+          color="crimson"
+          cursor="pointer"
+          onClick={() => window.history.back()}
+          _hover={{ color: 'red.300' }}
+        />
+        <Box className={styles.pageHeader}>Catch 'Em All!</Box>
+      </Flex>
       <Grid
         gap="2px"
         templateAreas={{
@@ -260,11 +259,11 @@ const PokeDex = () => {
         }}
         className={styles.deviceContainer}
       >
-        <GridItem 
-        area={'search'} 
-        height="100%" 
-        display="flex"
-        alignItems='flex-end'
+        <GridItem
+          area={'search'}
+          height="100%"
+          display="flex"
+          alignItems="flex-end"
         >
           <Search
             handleSearch={handleSearch}
@@ -291,11 +290,23 @@ const PokeDex = () => {
           <Capture handleCapture={handleCapture} />
         </GridItem>
       </Grid>
-      {pokemon.loading ? (
-        <div>Loading...</div>
-      ) : (
-        <PokemonCards pokemon={pokemon} />
-      )}
+      <div className={styles.pokemonCardsHeader}>Pokemon Index</div>
+      <Grid
+        templateColumns={'repeat(5, 1fr)'}
+        gap={6}
+        templateRows="repeat(3, 1fr)"
+        className={styles.pokemonCards}
+      >
+        {pokemon.loading ? (
+          <>
+            {[...Array(20)].map((_, idx) => (
+              <SkeletonCircle key={idx} size="100" />
+            ))}
+          </>
+        ) : (
+          <PokemonCards pokemon={pokemon} setSearchQuery={setSearchQuery} />
+        )}
+      </Grid>
     </Container>
   );
 };

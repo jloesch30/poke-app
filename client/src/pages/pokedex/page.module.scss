@@ -24,7 +24,9 @@ $pokemon-list-color: #A5B1C2;
 .deviceContainer {
   display: flex;
   border-radius: 8px;
+  border-width: 10px;
   flex-direction: row;
+  border-color: crimson;
   background-color: $device-color;
   align-items: center;
   justify-content: center;
@@ -58,6 +60,27 @@ $pokemon-list-color: #A5B1C2;
   padding-top: 100px;
   padding-bottom: 100px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pokemonCards {
+  margin-top: 20px;
+
+  .pokemonCard {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+  }
+}
+
+.pokemonCardsHeader {
+  padding: 20px;
+  font-size: 2rem;
 }
 
 .search {
