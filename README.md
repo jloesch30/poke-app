@@ -5,6 +5,8 @@ This repository contains code relevant to the assignment below, for local develo
 This application is hosted on Fly.io, you can find it here: https://poke-app-apex-client.fly.dev/
 
 # Local Development
+Please start by cloning this repository locally.
+
 ## Client
 First navigate to the `client` directory, once there, run the following:  
 ```
