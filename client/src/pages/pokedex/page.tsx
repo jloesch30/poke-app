@@ -1,9 +1,5 @@
 import { useAtom, useAtomValue } from 'jotai';
-import {
-  usePokemonAtom,
-  pokemonHost,
-  capturedPokemonAtom,
-} from './atoms';
+import { usePokemonAtom, pokemonHost, capturedPokemonAtom } from './atoms';
 import {
   Container,
   Flex,
@@ -18,6 +14,8 @@ import {
   AlertDescription,
   Image,
   useToast,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import styles from './page.module.scss';
 import { useState } from 'react';
@@ -108,8 +106,6 @@ const Search = ({
 const Display = ({ pokemon }: { pokemon: FetchResponse<Pokemon> }) => {
   if (pokemon.loading) return <div>Loading...</div>;
 
-  if (!pokemon.data && !pokemon.status) return <></>;
-
   const notFound = pokemon.status === 404;
 
   return (
@@ -131,6 +127,8 @@ const Display = ({ pokemon }: { pokemon: FetchResponse<Pokemon> }) => {
           </Flex>
           <Stats pokemon={pokemon.data} />
         </>
+      ) : !pokemon.data && !pokemon.status ? (
+        <div />
       ) : (
         <Alert status="error" borderRadius="8px">
           <AlertIcon />
@@ -159,31 +157,34 @@ interface PokemonListProps {
 
 const PokemonList = ({ capturedPokemon, handleRelease }: PokemonListProps) => {
   return (
-    <>
-      <div>
-        {capturedPokemon.map((pokemon, idx) => (
-          <div key={pokemon.id}>
-            <Image
-              src={pokemon.sprites.front_default}
-              onClick={() => handleRelease(idx)}
-              alt={pokemon.name}
-            />
-          </div>
-        ))}
-      </div>
-    </>
+    <Flex
+      direction={{
+        base: 'row',
+        md: 'column',
+      }}
+      alignItems="center"
+      justifyContent="center"
+    >
+      {capturedPokemon.map((pokemon, idx) => (
+        <div key={pokemon.id}>
+          <Image
+            src={pokemon.sprites.front_default}
+            onClick={() => handleRelease(idx)}
+            alt={pokemon.name}
+          />
+        </div>
+      ))}
+    </Flex>
   );
 };
-
 const searchAtom = createSearchAtom<Pokemon>();
 
 const PokeDex = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResult, setSearch] = useAtom(searchAtom);
 
   const pokemonAtom = usePokemonAtom('pokemon');
   const pokemon = useAtomValue(pokemonAtom);
-
-  const [searchResult, setSearch] = useAtom(searchAtom);
 
   const [capturedPokemon, setCapturedPokemon] = useAtom(capturedPokemonAtom);
 
@@ -205,23 +206,21 @@ const PokeDex = () => {
 
     const pokemon = searchResult.data;
 
-    const length = Object.keys(capturedPokemon).length;
+    const length = capturedPokemon.length;
 
     if (length >= 6) {
       toast({
         title: 'Cannot capture Pokemon',
         description: 'You have reached the maximum limit of captured Pokemon',
         status: 'error',
-        duration: 3000,
+        duration: 2000,
         isClosable: true,
       });
       return;
     }
 
-
     setCapturedPokemon((prev) => [...prev, pokemon]);
   };
-
 
   const handleRelesae = (selected: number) => {
     setCapturedPokemon((prev) => prev.filter((_, idx) => idx !== selected));
@@ -239,22 +238,30 @@ const PokeDex = () => {
     <Container centerContent maxW="4xl">
       <div className={styles.pageHeader}>Catch 'Em All!</div>
       <Grid
-        templateColumns={{
-          base: 'repeat(1, 1fr)',
-          md: 'repeat(3, 1fr)',
+        gap="2px"
+        templateAreas={{
+          base: `"search"
+                 "display"
+                 "list"
+                 "capture"`,
+          md: `"search search list"
+                 "display display list"
+                 "display display list"
+                 "capture capture list"
+                 `,
         }}
-        templateRows={{
-          base: 'repeat(4, 1fr)',
-          md: 'repeat(3, 1fr)',
+        h={{
+          base: 800,
+          md: 600,
         }}
         className={styles.deviceContainer}
       >
-        <GridItem
-          colSpan={{
-            base: 1,
-            md: 2,
-          }}
-          rowSpan={1}
+        <GridItem 
+        area={'search'} 
+        height="100%" 
+        display="flex"
+        alignItems='flex-end'
+        justifyContent='flex-end'
         >
           <Search
             handleSearch={handleSearch}
@@ -263,28 +270,21 @@ const PokeDex = () => {
           />
         </GridItem>
         <GridItem
-          colSpan={{
-            base: 1,
-            md: 2,
-          }}
-          rowSpan={2}
+          area={'display'}
           backgroundColor="white"
-          height="100%"
+          height="300px"
+          width="315px"
           borderRadius="8px"
         >
           <Display pokemon={searchResult} />
         </GridItem>
-        <GridItem
-          colSpan={1}
-          rowSpan={{
-            base: 1,
-            md: 2,
-          }}
-          height="100%"
-        >
-          <PokemonList capturedPokemon={capturedPokemon} handleRelease={handleRelesae} />
+        <GridItem area={'list'} minW="100px">
+          <PokemonList
+            capturedPokemon={capturedPokemon}
+            handleRelease={handleRelesae}
+          />
         </GridItem>
-        <GridItem colSpan={1} rowSpan={3} paddingTop="10px">
+        <GridItem area={'capture'} height="100%">
           <Capture handleCapture={handleCapture} />
         </GridItem>
       </Grid>
