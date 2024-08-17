@@ -6,11 +6,18 @@ const headers = {
 };
 
 
+type FetchResponse<Response> = {
+  status: number;
+  data?: Response;
+  error?: string;
+};
+
+
 const get = async <ApiResponse = unknown>(
   resource: string,
   host?: string | null,
   abortController?: AbortController
-): Promise<ApiResponse | { error: string }> => {
+): Promise<FetchResponse<ApiResponse>> => {
   try {
     const reqUrl = host ? `${host}${resource}` : resource;
     const response = await fetch(reqUrl, {
@@ -20,18 +27,19 @@ const get = async <ApiResponse = unknown>(
     });
 
     if (response.ok) {
-      return await response.json();
+      return { status: response.status, data: await response.json() };
     }
 
     if (response.status >= 500) {
-      return { error: 'Internal Server Error' };
+      return { status: response.status, error: 'Internal Server Error' };
     }
-    return { error: 'Unknown' };
+
+    return { status: response.status, error: 'Unknown' };
   } catch (e) {
     if (e instanceof Error && e.name === 'AbortError') {
-      return { error: e.name };
+      return { status: 499, error: e.name };
     }
-    return { error: 'Failed to fetch resource' };
+    return { status: 444, error: 'Failed to fetch resource' };
   }
 };
 
