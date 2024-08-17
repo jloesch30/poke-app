@@ -147,7 +147,11 @@ interface CaptureProps {
 }
 
 const Capture = ({ handleCapture }: CaptureProps) => {
-  return <Button onClick={handleCapture}>Throw Pokeball</Button>;
+  return <Button 
+  onClick={handleCapture}
+  borderColor="crimson"
+  borderWidth="2px"
+  >Throw Pokeball</Button>;
 };
 
 interface PokemonListProps {
@@ -261,7 +265,6 @@ const PokeDex = () => {
         height="100%" 
         display="flex"
         alignItems='flex-end'
-        justifyContent='flex-end'
         >
           <Search
             handleSearch={handleSearch}
