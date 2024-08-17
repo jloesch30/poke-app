@@ -20,6 +20,7 @@ const get = async <ApiResponse = unknown>(
 ): Promise<FetchResponse<ApiResponse>> => {
   try {
     const reqUrl = host ? `${host}${resource}` : resource;
+    console.log('reqUrl', reqUrl);
     const response = await fetch(reqUrl, {
       method: 'GET',
       headers: headers,

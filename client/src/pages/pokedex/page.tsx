@@ -229,6 +229,7 @@ const PokeDex = () => {
     const length = capturedPokemon.length;
 
     if (length >= 6) {
+      console.log('limit reached');
       limitToast(6);
       return;
     }

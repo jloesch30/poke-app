@@ -9,6 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       lib: path.resolve(__dirname, './src/lib'),
+      utils: path.resolve(__dirname, './src/utils'),
     }
   },
 	plugins: [
@@ -24,6 +25,7 @@ export default defineConfig({
 	},
   test: {
     include: ['**/*.test.{ts,tsx}'],
+    setupFiles: ['./testSetup.ts'],
     globals: true,
   }
 })
