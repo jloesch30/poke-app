@@ -1,3 +1,26 @@
+# Overview
+This repository contains code relevant to the assignment below, for local development, please follow the steps below:
+
+# URL
+This application is hosted on Fly.io, you can find it here: https://poke-app-apex-client.fly.dev/
+
+# Local Development
+## Client
+First navigate to the `client` directory, once there, run the following:  
+```
+yarn install
+``` 
+
+```
+yarn dev
+```
+
+## Server
+`# TODO`
+
+
+---
+
 # Front-end Exercise
 Welcome to the front-end technical exercise. The purpose of this is to test your React knowledge by building a fun and simple pokemon app. 
 First, thank you for considering Apex and for taking the time out of your busy day to interview with us. 
