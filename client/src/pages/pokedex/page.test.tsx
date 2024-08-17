@@ -10,9 +10,14 @@ import { vi } from 'vitest';
 import PokeDex from './page';
 import { pokemonFixture } from 'utils/fixtures/pokemon';
 import { useToast } from '@chakra-ui/react';
+import { MemoryRouter } from 'react-router-dom';
 
 const renderPokedex = async () => {
-  render(<PokeDex />);
+  render(
+    <MemoryRouter>
+      <PokeDex />
+    </MemoryRouter>,
+  );
 };
 
 type ToastMock = ReturnType<typeof vi.fn> & {
@@ -20,7 +25,8 @@ type ToastMock = ReturnType<typeof vi.fn> & {
 };
 
 vi.mock('@chakra-ui/react', async (importOriginal) => {
-  const originalModule = await importOriginal<typeof import('@chakra-ui/react')>();
+  const originalModule =
+    await importOriginal<typeof import('@chakra-ui/react')>();
 
   const toastMock = vi.fn() as ToastMock;
   toastMock.isActive = vi.fn(() => false);
@@ -111,7 +117,6 @@ describe('PokeDex', () => {
 
       expect(toast).toHaveBeenNthCalledWith(1, expectedToastParams);
     });
-
 
     it('notifies the user when the limit is reached', async () => {
       const toast = useToast();

@@ -27,6 +27,7 @@ import { Pokemon, PokemonIndexResponse } from 'types/api-responses';
 import { PokemonCard, Stats, Info } from 'components/pokedex';
 import { createSearchAtom, FetchResponse } from 'lib/atoms';
 import { useCaptureToast, useLimitToast, useReleaseToast } from '../../hooks';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface PokemonCardsProps {
   pokemon: FetchResponse<PokemonIndexResponse>;
@@ -106,7 +107,7 @@ const Search = ({
 };
 
 const Display = ({ pokemon }: { pokemon: FetchResponse<Pokemon> }) => {
-  if (pokemon.loading) return <Spinner />
+  if (pokemon.loading) return <Spinner />;
 
   const notFound = pokemon.status === 404;
 
@@ -118,7 +119,7 @@ const Display = ({ pokemon }: { pokemon: FetchResponse<Pokemon> }) => {
           <AlertTitle>Pokemon not found!</AlertTitle>
         </Alert>
       ) : pokemon.data && !('error' in pokemon.data) ? (
-        <Flex direction='column' height='100%'>
+        <Flex direction="column" height="100%">
           <Flex direction="row">
             <Image
               width="150px"
@@ -127,7 +128,7 @@ const Display = ({ pokemon }: { pokemon: FetchResponse<Pokemon> }) => {
             />
             <Info pokemon={pokemon.data} />
           </Flex>
-          <Box display='flex' alignItems='flex-end' height='100%'>
+          <Box display="flex" alignItems="flex-end" height="100%">
             <Stats pokemon={pokemon.data} />
           </Box>
         </Flex>
@@ -197,6 +198,8 @@ const PokemonList = ({ capturedPokemon, handleRelease }: PokemonListProps) => {
 const searchAtom = createSearchAtom<Pokemon>();
 
 const PokeDex = () => {
+  const navigate = useNavigate();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearch] = useAtom(searchAtom);
 
@@ -244,16 +247,21 @@ const PokeDex = () => {
   };
 
   return (
-    <Container centerContent maxW="4xl" marginBottom='5rem'>
+    <Container centerContent maxW="4xl" marginBottom="5rem">
       <Flex direction="row" alignItems="center" justifyContent="center" gap="8">
         <ArrowLeftIcon
           boxSize={10}
           color="crimson"
           cursor="pointer"
-          onClick={() => window.history.back()}
+          onClick={() => navigate('/')}
           _hover={{ color: 'red.300' }}
         />
-        <Heading size='5xl' className={styles.pageHeader}>Catch 'Em All!</Heading>
+        <Heading size={{
+          base: "3xl",
+          md: "5xl"
+        }} className={styles.pageHeader}>
+          Catch 'Em All!
+        </Heading>
       </Flex>
       <Grid
         gap="2px"
@@ -271,6 +279,10 @@ const PokeDex = () => {
         h={{
           base: 800,
           md: 600,
+        }}
+        w={{
+          base: '100%',
+          md: '70%',
         }}
         className={styles.deviceContainer}
         boxShadow="lg"
@@ -309,9 +321,15 @@ const PokeDex = () => {
           borderRadius="8px"
           borderWidth="5px"
           borderColor="crimson"
-          height="550px"
+          height={{
+            base: '200px',
+            md: "550px"
+          }}
           width="100%"
-          marginLeft="20px"
+          marginLeft={{
+            base: '0',
+            md: '20px',
+          }}
           paddingTop="30px"
           alignItems="flex-start"
           justifyContent="center"
