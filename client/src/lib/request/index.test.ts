@@ -10,11 +10,15 @@ describe('get', () => {
   test('should return data when the response is ok', async () => {
     (fetch as Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ data: '12345' }),
+      status: 200,
+      json: async () => ({ random: '12345' }),
     });
     const response = await request.get('https://example.com');
+    console.log(response);
 
-    expect(response).toEqual({ data: '12345' });
+    const expectedrResponse = { status: 200, data: { random: '12345' } };
+
+    expect(response).toEqual(expectedrResponse);
   });
 
   test('should return error when the response is not okay', async () => {
@@ -25,7 +29,9 @@ describe('get', () => {
 
     const response = await request.get('https://example.com');
 
-    expect(response).toEqual({ error: 'Internal Server Error' });
+    const expectedrResponse = { status: 500, error: 'Internal Server Error' };
+
+    expect(response).toEqual(expectedrResponse);
   });
 
   test('should abort the request when the abort controller is aborted', async () => {
@@ -36,6 +42,8 @@ describe('get', () => {
 
     const response = await request.get('https://example.com', null, abortController);
 
-    expect(response).toEqual({ error: 'AbortError' });
+    const expectedrResponse = { status: 499, error: 'AbortError' };
+
+    expect(response).toEqual(expectedrResponse);
   });
 });
