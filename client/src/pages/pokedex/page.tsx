@@ -3,7 +3,6 @@ import {
   usePokemonAtom,
   pokemonHost,
   capturedPokemonAtom,
-  CatpuredPokemon,
 } from './atoms';
 import {
   Container,
