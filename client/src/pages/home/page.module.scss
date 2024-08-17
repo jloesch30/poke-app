@@ -25,6 +25,13 @@ body {
 
 .fadeIn {
   animation: fadeIn 3s ease-in-out;
+  color: crimson;
+  text-decoration: underline;
+}
+
+.emphasis {
+  font-weight: 600;
+  color: crimson;
 }
 
 @keyframes fadeIn {
@@ -48,17 +55,4 @@ body {
 p {
   font-size: 1.2rem;
   margin-bottom: 1.5rem;
-}
-
-a {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  color: $link-color;
-  border-radius: 4px;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
-
-a:hover {
-  background-color: darken($background-color, 10%);
 }
