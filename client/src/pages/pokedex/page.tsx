@@ -1,7 +1,8 @@
 import { useAtom } from 'jotai';
 import {
   capturedPokemonAtom,
-  usePokemonPaginationAtom,
+  searchAtom,
+  paginatedPokemonAtom,
 } from './atoms';
 import { pokemonHost } from './common';
 import {
@@ -30,7 +31,6 @@ import { useState } from 'react';
 import { Pokemon, PokemonIndexResponse } from 'types/api-responses';
 import { PokemonCard, Stats, Info } from 'components/pokedex';
 import {
-  createSearchAtom,
   FetchResponse,
 } from 'lib/atoms';
 import { useCaptureToast, useLimitToast, useReleaseToast } from '../../hooks';
@@ -205,7 +205,6 @@ const PokemonList = ({ capturedPokemon, handleRelease }: PokemonListProps) => {
     </Flex>
   );
 };
-const searchAtom = createSearchAtom<Pokemon>();
 
 const PokeDex = () => {
   const navigate = useNavigate();
@@ -213,9 +212,7 @@ const PokeDex = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearch] = useAtom(searchAtom);
 
-  const paginatedPokemonAtom = usePokemonPaginationAtom(`${pokemonHost}/pokemon`);
   const [paginatedPokemon, setPaginatedPokemon] = useAtom(paginatedPokemonAtom);
-
   const [capturedPokemon, setCapturedPokemon] = useAtom(capturedPokemonAtom);
 
   const toast = useToast();
