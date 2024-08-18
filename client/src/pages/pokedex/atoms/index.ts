@@ -1,22 +1,21 @@
-import { useMemo } from "react";
-import { createCachedPaginatedResourceAtom, createResourceCacheMapAtom, createSingleCacheEntryAtom } from "lib/atoms";
+import { createCachedPaginatedResourceAtom, createResourceCacheMapAtom, createSearchAtom } from "lib/atoms";
 import { atomWithStorage } from "jotai/utils";
 import { Pokemon, PokemonIndexResponse } from "types/api-responses";
+import { pokemonHost } from "../common";
 
 
 const pokemonCacheAtom =
   createResourceCacheMapAtom<PokemonIndexResponse>();
 
-const usePokemonAtom = (href: string) =>
-  useMemo(() => createSingleCacheEntryAtom(pokemonCacheAtom)(href), [href]);
+
+const createPokemonPaginatedAtom = (
+  href: string,
+) => (
+  createCachedPaginatedResourceAtom<PokemonIndexResponse>(pokemonCacheAtom)(href)
+);
 
 const capturedPokemonAtom = atomWithStorage<Pokemon[]>("capturedPokemon", []);
+const searchAtom = createSearchAtom<Pokemon>();
+const paginatedPokemonAtom = createPokemonPaginatedAtom(`${pokemonHost}/pokemon`);
 
-const usePokemonPaginationAtom = (
-  href: string,
-) => useMemo(() => { 
-  return createCachedPaginatedResourceAtom<PokemonIndexResponse>(pokemonCacheAtom)(href);
-}, [href]);
-
-
-export { usePokemonAtom, capturedPokemonAtom, usePokemonPaginationAtom };
+export { searchAtom, paginatedPokemonAtom, capturedPokemonAtom };
