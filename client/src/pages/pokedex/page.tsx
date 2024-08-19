@@ -189,7 +189,10 @@ const PokemonList = ({ capturedPokemon, handleRelease }: PokemonListProps) => {
         capturedPokemon.map((pokemon, idx) => (
           <Image
             key={idx}
-            boxSize="80px"
+            boxSize={{
+              base: '50px',
+              md: '80px',
+            }}
             src={pokemon.sprites.front_default}
             onClick={() => handleRelease(idx)}
             alt={pokemon.name}
@@ -377,10 +380,13 @@ const PokeDex = () => {
         templateRows="repeat(3, 1fr)"
         className={styles.pokemonCards}
       >
-        {paginatedPokemon.loading ? (
+        { paginatedPokemon.loading ? (
           <>
             {[...Array(20)].map((_, idx) => (
-              <SkeletonCircle key={idx} size="100" />
+              <SkeletonCircle key={idx} size={{
+                base: '50',
+                md: '150px',
+              }} />
             ))}
           </>
         ) : (
