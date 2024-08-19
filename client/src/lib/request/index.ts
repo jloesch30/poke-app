@@ -15,20 +15,18 @@ type FetchResponse<Response> = {
 
 const get = async <ApiResponse = unknown>(
   resource: string,
-  host?: string | null,
   abortController?: AbortController
 ): Promise<FetchResponse<ApiResponse>> => {
   try {
-    const reqUrl = host ? `${host}${resource}` : resource;
-    console.log('reqUrl', reqUrl);
-    const response = await fetch(reqUrl, {
+    const response = await fetch(resource, {
       method: 'GET',
       headers: headers,
       signal: abortController?.signal,
     });
 
     if (response.ok) {
-      return { status: response.status, data: await response.json() };
+      const data = await response.json();
+      return { status: response.status, data: data };
     }
 
     if (response.status >= 500) {

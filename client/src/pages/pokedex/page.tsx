@@ -1,5 +1,9 @@
-import { useAtom, useAtomValue } from 'jotai';
-import { usePokemonAtom, pokemonHost, capturedPokemonAtom } from './atoms';
+import { useAtom } from 'jotai';
+import {
+  capturedPokemonAtom,
+  usePokemonPaginationAtom,
+} from './atoms';
+import { pokemonHost } from './common';
 import {
   Container,
   Flex,
@@ -19,15 +23,18 @@ import {
   Heading,
   Spinner,
 } from '@chakra-ui/react';
-import { ArrowLeftIcon } from '@chakra-ui/icons';
+import { ArrowLeftIcon, ArrowRightIcon } from '@chakra-ui/icons';
 import styles from './page.module.scss';
 import { useState } from 'react';
 
 import { Pokemon, PokemonIndexResponse } from 'types/api-responses';
 import { PokemonCard, Stats, Info } from 'components/pokedex';
-import { createSearchAtom, FetchResponse } from 'lib/atoms';
+import {
+  createSearchAtom,
+  FetchResponse,
+} from 'lib/atoms';
 import { useCaptureToast, useLimitToast, useReleaseToast } from '../../hooks';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface PokemonCardsProps {
   pokemon: FetchResponse<PokemonIndexResponse>;
@@ -203,8 +210,8 @@ const PokeDex = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearch] = useAtom(searchAtom);
 
-  const pokemonAtom = usePokemonAtom('pokemon');
-  const pokemon = useAtomValue(pokemonAtom);
+  const paginatedPokemonAtom = usePokemonPaginationAtom(`${pokemonHost}/pokemon`);
+  const [paginatedPokemon, setPaginatedPokemon] = useAtom(paginatedPokemonAtom);
 
   const [capturedPokemon, setCapturedPokemon] = useAtom(capturedPokemonAtom);
 
@@ -216,8 +223,12 @@ const PokeDex = () => {
 
   const handleSearch = () => {
     if (!searchQuery) return;
-    setSearch({ href: `pokemon/${searchQuery}`, host: pokemonHost });
+    setSearch({ href: `${pokemonHost}/pokemon/${searchQuery}` });
     setSearchQuery('');
+  };
+
+  const handlePokemonPagination = (action: 'prev' | 'next') => {
+    setPaginatedPokemon({ href: `${pokemonHost}/pokemon`, action });
   };
 
   const handleCapture = () => {
@@ -232,7 +243,6 @@ const PokeDex = () => {
     const length = capturedPokemon.length;
 
     if (length >= 6) {
-      console.log('limit reached');
       limitToast(6);
       return;
     }
@@ -256,10 +266,13 @@ const PokeDex = () => {
           onClick={() => navigate('/')}
           _hover={{ color: 'red.300' }}
         />
-        <Heading size={{
-          base: "3xl",
-          md: "5xl"
-        }} className={styles.pageHeader}>
+        <Heading
+          size={{
+            base: '3xl',
+            md: '5xl',
+          }}
+          className={styles.pageHeader}
+        >
           Catch 'Em All!
         </Heading>
       </Flex>
@@ -323,7 +336,7 @@ const PokeDex = () => {
           borderColor="crimson"
           height={{
             base: '200px',
-            md: "550px"
+            md: '550px',
           }}
           width="100%"
           marginLeft={{
@@ -343,21 +356,38 @@ const PokeDex = () => {
           <Capture handleCapture={handleCapture} />
         </GridItem>
       </Grid>
-      <Heading className={styles.pokemonCardsHeader}>Pokemon Index</Heading>
+      <Flex direction="row" alignItems="center">
+        <ArrowLeftIcon
+          _hover={{ color: 'red.300', transform: 'scale(1.2)' }}
+          transition="transform 0.2s"
+          cursor="pointer"
+          onClick={() => handlePokemonPagination('prev')}
+        />
+        <Heading className={styles.pokemonCardsHeader}>Pokemon Index</Heading>
+        <ArrowRightIcon
+          _hover={{ color: 'red.300', transform: 'scale(1.2)' }}
+          transition="transform 0.2s"
+          cursor="pointer"
+          onClick={() => handlePokemonPagination('next')}
+        />
+      </Flex>
       <Grid
         templateColumns={'repeat(5, 1fr)'}
         gap={6}
         templateRows="repeat(3, 1fr)"
         className={styles.pokemonCards}
       >
-        {pokemon.loading ? (
+        {paginatedPokemon.loading ? (
           <>
             {[...Array(20)].map((_, idx) => (
               <SkeletonCircle key={idx} size="100" />
             ))}
           </>
         ) : (
-          <PokemonCards pokemon={pokemon} setSearchQuery={setSearchQuery} />
+          <PokemonCards
+            pokemon={paginatedPokemon}
+            setSearchQuery={setSearchQuery}
+          />
         )}
       </Grid>
     </Container>

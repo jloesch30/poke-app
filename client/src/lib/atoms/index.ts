@@ -3,14 +3,17 @@ import request from "lib/request"
 
 export interface ResourceCacheAtomPayload {
   href: string;
-  host?: string | null;
   force?: boolean;
   abortController?: AbortController;
 }
 
+export interface PaginatedResourceCacheAtomPayload {
+  href: string;
+  action?: 'prev' | 'next' | null;
+}
+
 export interface SearchAtomPayload {
   href: string;
-  host?: string | null;
 }
 
 export type FetchResponse<Response> = {
@@ -40,7 +43,9 @@ const createResourceCacheMapAtom = <
     [ResourceCacheAtomPayload],
     void
   >(
-    (get) => get(mapBaseAtom),
+    (get) => {
+      return get(mapBaseAtom)
+    },
     async (get, set, payload) => {
       const href = payload.href;
       if (!href) {
@@ -54,7 +59,6 @@ const createResourceCacheMapAtom = <
         }));
         const res = await request.get<Response>(
           href,
-          payload.host,
           payload.abortController
         );
 
@@ -73,13 +77,12 @@ const createResourceCacheMapAtom = <
 };
 
 const createSingleCacheEntryAtom =
-  <T>(cache: ResourceCacheMapAtom<T>) =>
+  <Response>(cache: ResourceCacheMapAtom<Response>) =>
     (
       href: string,
-      host?: string | null
     ) => {
       const singleEntryAtom = atom<
-        FetchResponse<T>,
+        FetchResponse<Response>,
         [ResourceCacheAtomPayload],
         void
       >(
@@ -87,7 +90,7 @@ const createSingleCacheEntryAtom =
           return get(cache)[href] || { loading: true, data: undefined, status: undefined };
         },
         (_get, set, payload) => {
-          set(cache, { ...payload, host });
+          set(cache, { ...payload });
         }
       );
       singleEntryAtom.onMount = (set) => {
@@ -96,10 +99,61 @@ const createSingleCacheEntryAtom =
       return singleEntryAtom;
     };
 
+type PaginatedResponse = {
+  previous: string | null;
+  next: string | null;
+};
+
+const createCachedPaginatedResourceAtom =
+  <Response extends PaginatedResponse>(
+    cache: ResourceCacheMapAtom<Response>,
+  ) => (
+    href: string,
+  ) => {
+      const currHrefAtom = atom<string | null>(href);
+
+      const paginatedSingleEntryAtom = atom<
+        FetchResponse<Response>,
+        [PaginatedResourceCacheAtomPayload],
+        void
+      >(
+        (get) => {
+          const currHref = get(currHrefAtom);
+          return get(cache)[currHref || href] || { loading: true, data: undefined, status: undefined };
+        },
+        async (get, set, payload) => {
+          const currHref = get(currHrefAtom);
+
+          if (!payload.href) return;
+
+          const hrefToFetch = currHref || payload.href;
+          const innerCachedAtom = get(cache)[hrefToFetch];
+
+          if (!innerCachedAtom) {
+            set(cache, { ...payload, href: hrefToFetch });
+            return;
+          }
+
+          if (!(payload.action) || !(innerCachedAtom.data) || ('error' in innerCachedAtom.data)) return;
+
+          if (payload.action === 'prev' && innerCachedAtom.data.previous) {
+            set(currHrefAtom, innerCachedAtom.data.previous);
+            set(cache, { href: innerCachedAtom.data.previous });
+          } else if (payload.action === 'next' && innerCachedAtom.data.next) {
+            set(currHrefAtom, innerCachedAtom.data.next);
+            set(cache, { href: innerCachedAtom.data.next });
+          }
+        }
+      );
+      paginatedSingleEntryAtom.onMount = (set) => {
+        set({ href });
+      };
+      return paginatedSingleEntryAtom;
+    };
+
 
 const createResourceAtom = <Response>(
   href: string | undefined,
-  host?: string | null,
 ) => {
   const innerAtom = atom<FetchResponse<Response>>({ loading: true, data: undefined, status: undefined });
   const resourceAtom = atom(
@@ -107,7 +161,7 @@ const createResourceAtom = <Response>(
     async (_, set) => {
       if (!href) return;
       set(innerAtom, { loading: true, data: undefined, status: undefined });
-      const res = await request.get<Response>(href, host);
+      const res = await request.get<Response>(href);
       set(innerAtom, { loading: false, data: res.data, status: res.status });
     }
   );
@@ -126,10 +180,10 @@ const createSearchAtom = <Response>() => {
     void
   >(
     (get) => get(innerAtom),
-    async (_, set, { href, host }) => {
+    async (_, set, { href }) => {
       if (!href) return;
       set(innerAtom, { loading: true, data: undefined });
-      const res = await request.get<Response>(href, host);
+      const res = await request.get<Response>(href);
       set(innerAtom, { loading: false, data: res.data, status: res.status });
     }
   );
@@ -141,5 +195,6 @@ export {
   createResourceAtom,
   createResourceCacheMapAtom,
   createSingleCacheEntryAtom,
+  createCachedPaginatedResourceAtom,
   createSearchAtom,
 };

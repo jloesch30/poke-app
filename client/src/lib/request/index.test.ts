@@ -39,7 +39,7 @@ describe('get', () => {
       return Promise.reject(new DOMException('Aborted', 'AbortError'));
     });
 
-    const response = await request.get('https://example.com', null, abortController);
+    const response = await request.get('https://example.com', abortController);
 
     const expectedrResponse = { status: 499, error: 'AbortError' };
 
